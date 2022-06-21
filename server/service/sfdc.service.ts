@@ -223,7 +223,7 @@ export class SfdcService {
   }
 
   // ファイルアップロード
-  async uploadContentVersion(metadata: ContentVersion, file: Buffer): Promise<RecordResult> {
+  async uploadContentVersion(metadata: ContentVersion, file: any): Promise<RecordResult> {
     if (!SfdcService.accessToken) {
       await this.login()
     }

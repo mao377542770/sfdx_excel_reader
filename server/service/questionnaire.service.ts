@@ -100,6 +100,24 @@ export class QuestionnaireService {
     await this.setAnasislyTable().catch(err => {
       throw err
     })
+
+    // ファイルアップロード
+    this.fileUpload()
+  }
+
+  private async fileUpload() {
+    const buffer = await this.getFileBuffer()
+    // ファイルをSFDCにアップロード
+    const contentVersion = {
+      Title: `調査票_${this.outputConfig.opportunityName}`,
+      PathOnClient: `調査票_${this.outputConfig.opportunityName}.xlsx`
+    }
+
+    const uploadRes = await this.sfdcService.uploadContentVersion(contentVersion, buffer)
+
+    if (uploadRes && uploadRes.success) {
+      await this.sfdcService.linkFileToObj(uploadRes.id, this.outputConfig.opportunityId)
+    }
   }
 
   public async getFileBuffer() {
@@ -130,7 +148,7 @@ export class QuestionnaireService {
     const sql = `SELECT Id,CompanyName_Contractor__c,CompanyNameKana_Contractor__c,Address_Contract__c FROM Account WHERE ID = '0010w00000xh6O9AAI'`
     const accRes = await this.sfdcService.query<Account>(sql)
     let acc: Account
-    if (!accRes || accRes.totalSize === 0) acc = accRes.records[0]
+    if (accRes && accRes.totalSize > 0) acc = accRes.records[0]
 
     // 商談調査票
     const aqSql = `SELECT ${SfdcService.getQueryFileds(
@@ -138,7 +156,7 @@ export class QuestionnaireService {
     )} FROM AccountQuestionnaire__c WHERE Id = 'a280w000000L2zuAAC'`
     const aqRes = await this.sfdcService.query<AccountQuestionnaire__c>(aqSql)
     let aq: AccountQuestionnaire__c
-    if (!aqRes || aqRes.totalSize === 0) aq = aqRes.records[0]
+    if (aqRes && aqRes.totalSize > 0) aq = aqRes.records[0]
 
     sheet.getRows(4, 5)?.forEach(row => {
       row.eachCell((cell, colNumber) => {
@@ -153,6 +171,8 @@ export class QuestionnaireService {
             } else if (aq && aq[filedApiName]) {
               // 商談調査票
               cell.value = aq[filedApiName]
+            } else {
+              cell.value = null
             }
           }
         }
@@ -160,10 +180,12 @@ export class QuestionnaireService {
     })
 
     // 商談事務へのコメント
-    const oppSql = `SELECT CommentForSalesOffice__c FROM Opportunity WHERE Id = '0060w00000BmPa2AAF'`
+    const oppSql = `SELECT Name,CommentForSalesOffice__c FROM Opportunity WHERE Id = '0060w00000BmPa2AAF'`
     const oppRes = await this.sfdcService.query<Opportunity>(oppSql)
     if (!oppRes || oppRes.totalSize === 0) return
     const opp = oppRes.records[0]
+    // 商談名を設定する
+    this.outputConfig.opportunityName = opp.Name
     sheet.getRows(11, 3)?.forEach(row => {
       row.eachCell((cell, colNumber) => {
         this.setCellVal(cell, opp)
@@ -186,6 +208,8 @@ export class QuestionnaireService {
       if (record[filedApiName]) {
         // 需要家値を設定する
         cell.value = record[filedApiName]
+      } else {
+        cell.value = null
       }
     }
   }

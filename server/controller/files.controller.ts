@@ -5,8 +5,6 @@ import { SfdcService } from "../service/sfdc.service"
 import { HttpResult } from "../model/httpResult"
 import { OutputConfig } from "../model/outputConfig"
 import { QuestionnaireService } from "../service/questionnaire.service"
-import fs from "fs"
-import { Account } from "../model/account"
 
 export class FilesController implements BaseController {
   public router: Router
@@ -18,23 +16,27 @@ export class FilesController implements BaseController {
 
   public intializeRoutes() {
     this.router.post("/api/questionnaire", this.getQuestionnaire)
-    this.router.get("/api/test", this.testDownLoadFile)
+    this.router.get("/api/test/:Id", this.testDownLoadFile)
   }
 
   testDownLoadFile = async (req: Request, res: Response) => {
     const optConfig: OutputConfig = {
       accountId: "test",
       opportunityId: "test",
-      userId: "test"
+      userId: "test",
+      opportunityName: ""
     }
+
+    optConfig.opportunityId = req.params.Id
 
     const ars = new QuestionnaireService(optConfig)
     await ars.init()
-    const fileBuffer = await ars.getFileBuffer()
-    res.set("Content-disposition", "attachment; filename=" + "demo.xlsx")
-    res.set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    return res.end(fileBuffer)
-    // return res.send("ok")
+    console.log("出力成功")
+    // const fileBuffer = await ars.getFileBuffer()
+    // res.set("Content-disposition", "attachment; filename=" + "demo.xlsx")
+    // res.set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    // return res.end(fileBuffer)
+    return res.send("ok")
   }
 
   /**
