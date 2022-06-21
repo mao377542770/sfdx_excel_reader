@@ -1,0 +1,46 @@
+export interface Account {
+  [key: string]: any
+  Id: string
+  // 需要家
+  CompanyName_Contractor__c: string
+  CompanyNameKana_Contractor__c: string
+  Address_Contract__c: string
+  // 重要場所
+  FacilityName__c: string
+  FacilityNameKana__c: string
+  SupplyPointIdentificationNumber__c: string
+  KeisokuDate__c: string
+  SupplyStartDate__c: string
+  SupplyEndDate__c: string
+  Postcode_Contractor_Res__c: string
+  CompanyAdress2_Contractor_Res__c: string
+  CompanyAdress3_Contractor_Res__c: string
+  CompanyAdress5_Contractor_Res__c: string
+  CompanyAdress6_Contractor_Res__c: string
+  CompanyAdress7_Contractor_Res__c: string
+  CompanyAdress8_Contractor_Res__c: string
+  DemanderWindowDepartment__c: string
+  DemanderWindowName__c: string
+  DemanderWindowPhone__c: string
+  InvoiceResponsiblerDepartment__c: string
+  InvoiceResponsiblerName__c: string
+  InvoiceResponsiblerPhone__c: string
+  ContractNumberOfCurrentRetailer__c: string
+  InvoiceWindowDepartment__c: string
+  InvoiceWindowName__c: string
+  InvoiceWindowPhone__c: string
+  InvoiceWindowEmail__c: string
+  InvoiceDescribedInfoPostcode__c: string
+  InvoiceDescribedInfoAddress2__c: string
+  InvoiceDescribedInfoAddress3__c: string
+  InvoiceDescribedInfoAddress4__c: string
+  InvoiceDescribedInfoAddress5__c: string
+  InvoiceDescribedInfoDestination__c: string
+  InvoiceDescribedInfoName__c: string
+  InvoiceProcess__c: string
+  BankName__c: string
+  BankType__c: string
+  BankBranchName__c: string
+  BankAccountNumber__c: string
+  BankAccountName__c: string
+}
